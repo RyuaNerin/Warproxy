@@ -4,10 +4,9 @@
 * Support TCP Only.
 * [Based Warp (wirtten in python)](https://github.com/devunt/warp)
 
-[TOC]
 
 ## LICENSE
-* MIT LICENSE (Include in LICENSE file)
+* MIT LICENSE (Include in [LICENSE file](/LICENSE))
 * *EXEMPTION CLAUSE*
  * *All caused by the usage of WARP is the responsibility of the user.*
  * *Code contributors WARP is not responsible for the use.*
@@ -15,8 +14,9 @@
 ## CLASS
 ### WarpEngine (IDisposable)
 * Function
+
 |Return Type|Name|
-|-|-|
+|---|---|
 |void|Dispose()
 |void|Start()
 |void|Start(int)
@@ -26,8 +26,9 @@
 
 
 * Property
+
 |Return Type|Name|ReadOnly|
-|-|-|-|
+|---|---|---|
 |IWebProxy|LocalProxy|O|
 |int|MowQueuedConnections|O|
 |int|MaxQueuedConnectinos||
@@ -37,18 +38,19 @@
 
 ### WarpExtensions (static)
 * Function
+
 |Return Type|Name|
-|-|-|
+|---|---|
 |void|SetWarp(this WebRequest, WarpEngine)|
 |void|SetWarp(this WebRequest, WarpEngine, IWebProxy)|
 
 
 * Usage
- * WebRequest.SetWarp(engine);
- * WebRequest.SetWarp(engine, proxy);
+ * `WebRequest.SetWarp(engine);`
+ * `WebRequest.SetWarp(engine, proxy);`
 
 ## EXAMPLE
-```
+```cs
 WarpEngine engine = new WarpEngine();
 engine.Start();
 WebRequest req = WebRequest.Create("url");
