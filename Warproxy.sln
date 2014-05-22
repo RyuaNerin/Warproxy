@@ -1,0 +1,42 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+<<<<<<< HEAD
+=======
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Warproxy", "WarpHTTP\Warproxy.csproj", "{160F58C9-15F6-4CB4-946C-5A56066F9DA0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WarproxyTest", "WarpHTTPTest\WarproxyTest.csproj", "{6654B62E-DCA5-4F08-B123-EE1BB1EAE1F2}"
+EndProject
+>>>>>>> 5fbd78214cfac986179024c1803ed1127a3f8aa0
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionDir", "SolutionDir", "{06F59A18-6F3B-4630-8CB6-80C33872CB2E}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
+<<<<<<< HEAD
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Warproxy", "Warproxy\Warproxy.csproj", "{160F58C9-15F6-4CB4-946C-5A56066F9DA0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WarproxyTest", "WarproxyTest\WarproxyTest.csproj", "{6654B62E-DCA5-4F08-B123-EE1BB1EAE1F2}"
+EndProject
+=======
+>>>>>>> 5fbd78214cfac986179024c1803ed1127a3f8aa0
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{160F58C9-15F6-4CB4-946C-5A56066F9DA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{160F58C9-15F6-4CB4-946C-5A56066F9DA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{160F58C9-15F6-4CB4-946C-5A56066F9DA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{160F58C9-15F6-4CB4-946C-5A56066F9DA0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6654B62E-DCA5-4F08-B123-EE1BB1EAE1F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6654B62E-DCA5-4F08-B123-EE1BB1EAE1F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6654B62E-DCA5-4F08-B123-EE1BB1EAE1F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6654B62E-DCA5-4F08-B123-EE1BB1EAE1F2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
