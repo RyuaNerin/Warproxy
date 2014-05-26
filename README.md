@@ -1,72 +1,66 @@
-# Warproxy 1.0.0
-* HTTP transparent local proxy
+# Warproxy 1.1.0
+* HTTP transparent local proxy library
 * Written by C# .Net Framework 3.5
-* Support TCP Only.
 * [Based Warp (wirtten in python)](https://github.com/devunt/warp)
 
 
-# LICENSE
-* MIT LICENSE (Include in [LICENSE file](/LICENSE))
+# SUPPORT
+* Support TCP only.
+* Support IPv4 & IPv6.
+* Support keep-alive connection (HTTP 1.1).
+* Support other proxy.
+
+
+# [LICENSE](/LICENSE)
+* MIT LICENSE
 * *EXEMPTION CLAUSE*
  * *All caused by the usage of WARP is the responsibility of the user.*
  * *Code contributors WARP is not responsible for the use.*
 
+
 # CLASS
-
 ## WarpEngine (IDisposable)
-* Function
+* Constructor
+ * `new WarpEngine()`
+ * `new WarpEngine(Port)`
 
-|Return Type|Name|
-|:---:|---|
-|void|Dispose()
-|void|Start()
-|void|Start(int)
-|void|Stop()
-|void|SetWarp(WebRequest)
-|void|SetProxy(IWebProxy)
+
+* Function
+ * `void Dispose()`
+ * `void Start()`
+ * `void Stop()`
+ * `void SetWarp(WebRequest)`
 
 
 * Property
+ * `int ConnectionCount (ReadOnly)`
+ * `int MaxQueuedConnections`
+ * `int BufferSize`
+ * `int Port`
+ * `int TimeOut`
 
-|Return Type|Name|ReadOnly|
-|:---:|---|---|
-|int|MowQueuedConnections|O|
-|int|MaxQueuedConnectinos||
-|int|BufferSize||
-|int|Port||
-|int|TimeOut|||
 
 ## WarpExtensions (static)
 * Function
-
-|Return Type|Name|
-|:---:|---|
-|void|SetWarp(this WebRequest, WarpEngine)|
-|void|SetWarp(this WebRequest, WarpEngine, IWebProxy)|
+ * `void SetWarp(this WebRequest, WarpEngine)`
+ * `void SetWarp(this WebRequest, WarpEngine, IWebProxy)`
 
 
 * Usage
- * `WebRequest.SetWarp(engine);`
- * `WebRequest.SetWarp(engine, proxy);`
+ * `(WebRequest).SetWarp(engine)`
+ * `(WebRequest).SetWarp(engine, IWebProxy)`
 
-# EXAMPLE
-```cs
-WarpEngine engine = new WarpEngine();
-engine.Start();
-WebRequest req = WebRequest.Create("url");
 
-// #1
-engine.SetProxy(HttpWebRequest.DefaultWebProxy);
-req.Proxy = engine.LocalProxy;
-
-// #2
-// engine.SetProxy(HttpWebRequest.DefaultWebProxy);
-// engine.SetWarp(req);
-
-// #3
-// engine.SetProxy(HttpWebRequest.DefaultWebProxy);
-// req.SetWarp(engine);
-
-// #4
-// req.SetWarp(engine, HttpWebRequest.DefaultWebProxy);
-```
+* Example
+ ```
+ WebRequest req1 = WebRequest.Create("http://www.google.com/");
+ WebRequest req2 = WebRequest.Create("http://www.google.com/");
+ 
+ engine.SetProxy(HttpWebRequest.DefaultWebProxy);
+ 
+ // req1 use DefaultWebProxy
+ req1.SetWarp(engine);
+ 
+ // req2 use NewWebProxy. not DefaultWebProxy
+ req2.SetWarp(engine, NewWebProxy);
+ ```

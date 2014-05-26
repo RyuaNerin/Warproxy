@@ -11,25 +11,41 @@ namespace Warproxy
 {
 	public class WarpEngine : IDisposable
 	{
-		public const int DefaultPort = 54635;
+		public const int		DefaultPort		= 54635;
+		public const int		DefaultBuffer	= 16 * 1024;	// 16 KiB
+		public const int		DefaultTimeOut	= 30 * 1000;	// 30 Seconds
 
 		private IList<WarpThread> m_warps = new List<WarpThread>();
 
-		internal	WebProxy	m_localProxy;
-		internal	IWebProxy	m_Proxy;
-		private		bool		m_disposed				= false;
-		private		bool		m_isStarted				= false;
-		private		int			m_maxQueuedConnections	= 20;
-		private		int			m_port					= WarpEngine.DefaultPort;
-		internal	int			m_bufferSize			= 16 * 1024;	// 16 KiB
-		internal	int			m_timeOut				= 30 * 1000;	// 30 Seconds
-		private		Socket		m_socket;
+		private	WebProxy	m_localProxy;
+		private	IWebProxy	m_Proxy;
+		private	Socket		m_socketv4;
+		private	Socket		m_socketv6;
 
+		private	bool		m_disposed				= false;
+		private	bool		m_isStarted				= false;
+
+		private	int			m_maxQueuedConnections	= 20;
+		private	int			m_port;
+		private	int			m_bufferSize;
+		private	int			m_timeOut;
+
+#region Constructor
 		public WarpEngine()
+			: this(WarpEngine.DefaultPort)
 		{
-			this.m_isStarted	= false;
-			this.m_localProxy	= new WebProxy("127.0.0.1", this.m_port);
 		}
+		public WarpEngine(int port)
+		{
+			this.m_port			= port;
+			this.m_timeOut		= WarpEngine.DefaultTimeOut;
+			this.m_bufferSize	= WarpEngine.DefaultBuffer;
+
+			this.m_localProxy = new WebProxy("127.0.0.1", this.m_port);
+		}
+#endregion
+
+#region Destructor
 		~WarpEngine()
 		{
 			Dispose(false);
@@ -47,8 +63,11 @@ namespace Warproxy
 
 				if (disposing)
 				{
-					if (this.m_socket != null && this.m_socket.Connected)
-						this.m_socket.Close();
+					if (this.m_socketv4 != null && this.m_socketv4.Connected)
+						this.m_socketv4.Close();
+
+					if (this.m_socketv6 != null && this.m_socketv6.Connected)
+						this.m_socketv6.Close();
 
 					for (int i = 0; i < this.m_warps.Count; ++i)
 						this.m_warps[i].Dispose();
@@ -57,24 +76,24 @@ namespace Warproxy
 				}
 			}
 		}
+#endregion
 
-		private void SetProxyPort()
-		{
-			UriBuilder uriBuilder = new UriBuilder(this.m_localProxy.Address);
-			uriBuilder.Port = this.m_port;
-
-			this.m_localProxy.Address = uriBuilder.Uri;
-		}
-
+#region Properties
 		public IWebProxy LocalProxy
 		{
 			get { return this.m_localProxy; }
 		}
 
-		public int NowQueuedConnections
+		internal IWebProxy Proxy
+		{
+			get { return this.m_Proxy; }
+		}
+
+		public int ConnectionCount
 		{
 			get { lock (this.m_warps) return this.m_warps.Count; }
 		}
+
 		public int MaxQueuedConnections
 		{
 			get { return this.m_maxQueuedConnections; }
@@ -89,6 +108,7 @@ namespace Warproxy
 				this.m_maxQueuedConnections = value;
 			}
 		}
+
 		public int Port
 		{
 			get { return this.m_port; }
@@ -104,33 +124,38 @@ namespace Warproxy
 				this.SetProxyPort();
 			}
 		}
+
 		public int TimeOut
 		{
 			get { return this.m_timeOut; }
 			set
 			{
-				if (this.m_isStarted)
-					throw new Exception("Socket is not closed");
-
 				if (value < 0)
 					throw new ArgumentOutOfRangeException("TimeOut is must 0 or more");
 				
 				this.m_timeOut = value;
 			}
 		}
+
 		public int BufferSize
 		{
 			get { return this.m_bufferSize; }
 			set
 			{
-				if (this.m_isStarted)
-					throw new Exception("Socket is not closed");
-
 				if (value < 0)
 					throw new ArgumentOutOfRangeException("BufferSize is must 0 or more");
 
 				this.m_bufferSize = value;
 			}
+		}
+#endregion
+
+		private void SetProxyPort()
+		{
+			UriBuilder uriBuilder = new UriBuilder(this.m_localProxy.Address);
+			uriBuilder.Port = this.m_port;
+
+			this.m_localProxy.Address = uriBuilder.Uri;
 		}
 
 		public void SetWarp(WebRequest webRequest)
@@ -144,30 +169,37 @@ namespace Warproxy
 			this.m_Proxy = proxy;
 		}
 		
-		public void Start(int port)
-		{
-			this.Port = port;
-			this.Start();
-		}
 		public void Start()
 		{
+			if (this.m_isStarted)
+				throw new Exception("Socket is not closed");
+
 			this.m_isStarted = true;
 
-			this.m_socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-			this.m_socket.ReceiveTimeout	= this.m_timeOut;
-			this.m_socket.SendTimeout		= this.m_timeOut;
-			this.m_socket.ReceiveBufferSize	= this.m_bufferSize;
-			this.m_socket.SendBufferSize	= this.m_bufferSize;
-			
-			this.m_socket.Bind(new IPEndPoint(IPAddress.Any, this.m_port));
+			this.SetSocket(this.m_socketv4, AddressFamily.InterNetwork, IPAddress.Any);
+			this.SetSocket(this.m_socketv6, AddressFamily.InterNetworkV6 | AddressFamily.InterNetworkV6, IPAddress.IPv6Any);
+		}
 
-			this.m_socket.Listen(this.m_maxQueuedConnections);
-			this.m_socket.BeginAccept(BeginAcceptCallback, this.m_socket);
+		private void SetSocket(Socket socket, AddressFamily addressFamily, IPAddress ipAdress)
+		{
+			socket = new Socket(addressFamily, SocketType.Stream, ProtocolType.Tcp);
+			socket.ReceiveTimeout		= this.m_timeOut;
+			socket.SendTimeout			= this.m_timeOut;
+			socket.ReceiveBufferSize	= this.m_bufferSize;
+			socket.SendBufferSize		= this.m_bufferSize;
+
+			socket.Bind(new IPEndPoint(ipAdress, this.m_port));
+			socket.Listen(this.m_maxQueuedConnections);
+			socket.BeginAccept(BeginAcceptCallback, socket);
 		}
 
 		public void Stop()
 		{
-			this.m_socket.Close();
+			if (!this.m_isStarted)
+				throw new Exception("Socket is not started");
+
+			this.m_socketv4.Close();
+			this.m_socketv6.Close();
 
 			this.m_isStarted = false;
 		}
@@ -181,8 +213,10 @@ namespace Warproxy
 			try
 			{
 				Socket client = listener.EndAccept(ar);
-				client.ReceiveBufferSize = this.m_bufferSize;
-				client.SendBufferSize = this.m_bufferSize;
+				client.ReceiveTimeout		= this.m_timeOut;
+				client.SendTimeout			= this.m_timeOut;
+				client.ReceiveBufferSize	= this.m_bufferSize;
+				client.SendBufferSize		= this.m_bufferSize;
 
 				lock (this.m_warps)
 					this.m_warps.Add(new WarpThread(this, client));
