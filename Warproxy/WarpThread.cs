@@ -279,14 +279,7 @@ namespace Warproxy
 				return true;
 			}
 
-			string PathAndQuery = null;
-
-			if (String.IsNullOrEmpty(uriBuilder.Query))
-				PathAndQuery = uriBuilder.Path;
-			else
-				PathAndQuery = String.Format("{0}?{1}", uriBuilder.Path, uriBuilder.Query);
-
-			header = header.Replace(requestUriString, PathAndQuery);
+			header = header.Replace(requestUriString, String.Format("{0}{1}", uriBuilder.Path, uriBuilder.Query));
 
 			//////////////////////////////////////////////////////////////////////////
 			// Check Headers
