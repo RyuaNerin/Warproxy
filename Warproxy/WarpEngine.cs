@@ -198,8 +198,19 @@ namespace Warproxy
 			if (!this.m_isStarted)
 				throw new Exception("Socket is not started");
 
-			this.m_socketv4.Close();
-			this.m_socketv6.Close();
+			try
+			{
+				this.m_socketv4.Close();
+			}
+			catch
+			{ }
+
+			try
+			{
+				this.m_socketv6.Close();
+			}
+			catch
+			{ }
 
 			this.m_isStarted = false;
 		}
