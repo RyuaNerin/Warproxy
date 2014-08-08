@@ -79,7 +79,6 @@ namespace Warproxy
 			bool		isConnect;
 			IPAddress[]	ipAddresses4;
 			IPAddress[]	ipAddresses6;
-			int			i;
 
 			bool		isNotNull = false;
 			string		header;

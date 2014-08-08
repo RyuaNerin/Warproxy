@@ -19,8 +19,8 @@ namespace Warproxy
 
 		private	WebProxy	m_localProxy;
 		private	IWebProxy	m_Proxy;
-		private	Socket		m_socketv4;
-		private	Socket		m_socketv6;
+		private	Socket		m_socketv4 = null;
+		private	Socket		m_socketv6 = null;
 
 		private	bool		m_disposed				= false;
 		private	bool		m_isStarted				= false;
