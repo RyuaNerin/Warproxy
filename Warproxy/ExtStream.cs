@@ -11,6 +11,7 @@ namespace Warproxy
 		private byte[]			m_buff;
 		private bool			m_disposed = false;
 		private MemoryStream	m_stream;
+		public  bool			m_firstHeader = true;
 
 		public ExtStream(int bufferSize)
 		{
@@ -216,9 +217,25 @@ namespace Warproxy
 
 					this.m_stream.Position = lastPosition;
 
-					this.m_stream.Read(this.m_buff, 0, len);
+					if (this.m_firstHeader)
+					{
+						this.m_buff[0] = 0x0D;
+						this.m_buff[1] = 0x0A;
+						this.m_stream.Read(this.m_buff, 2, len);
+						sent = socket.Send(this.m_buff, 0, len + 2, SocketFlags.None);
 
-					sent = socket.Send(this.m_buff, 0, len, SocketFlags.None);
+						if (sent > 2)
+						{
+							sent -= 2;
+
+							m_firstHeader = false;
+						}
+					}
+					else
+					{
+						this.m_stream.Read(this.m_buff, 0, len);
+						sent = socket.Send(this.m_buff, 0, len, SocketFlags.None);
+					}
 
 					lastPosition += sent;
 				}

@@ -168,7 +168,7 @@ namespace Warproxy
 			this.m_localProxy.Credentials = proxy.Credentials;
 			this.m_Proxy = proxy;
 		}
-		
+
 		public void Start()
 		{
 			if (this.m_isStarted)
@@ -176,11 +176,11 @@ namespace Warproxy
 
 			this.m_isStarted = true;
 
-			this.SetSocket(this.m_socketv4, AddressFamily.InterNetwork, IPAddress.Any);
-			this.SetSocket(this.m_socketv6, AddressFamily.InterNetworkV6 | AddressFamily.InterNetworkV6, IPAddress.IPv6Any);
+			this.SetSocket(ref this.m_socketv4, AddressFamily.InterNetwork,   IPAddress.Any);
+			this.SetSocket(ref this.m_socketv6, AddressFamily.InterNetworkV6, IPAddress.IPv6Any);
 		}
 
-		private void SetSocket(Socket socket, AddressFamily addressFamily, IPAddress ipAdress)
+		private void SetSocket(ref Socket socket, AddressFamily addressFamily, IPAddress ipAdress)
 		{
 			socket = new Socket(addressFamily, SocketType.Stream, ProtocolType.Tcp);
 			socket.ReceiveTimeout		= this.m_timeOut;
@@ -201,6 +201,7 @@ namespace Warproxy
 			try
 			{
 				this.m_socketv4.Close();
+				this.m_socketv4 = null;
 			}
 			catch
 			{ }
@@ -208,6 +209,7 @@ namespace Warproxy
 			try
 			{
 				this.m_socketv6.Close();
+				this.m_socketv6 = null;
 			}
 			catch
 			{ }

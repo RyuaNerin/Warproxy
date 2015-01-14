@@ -1,4 +1,4 @@
-# Warproxy 1.1.2
+# Warproxy 2.0.0 BETA
 * HTTP transparent local proxy library
 * Written by C# .Net Framework 3.5
 * [Based Warp (wirtten in python)](https://github.com/devunt/warp)
@@ -9,6 +9,7 @@
 * Support IPv4 & IPv6.
 * Support keep-alive connection (HTTP 1.1).
 * Support other proxy.
+* Available after 01.15.15
 
 
 # [LICENSE](/LICENSE)
